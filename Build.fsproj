@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Build.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Elmish.AnimatedTree" Version="1.1.0" />
+    <PackageReference Include="Elmish.SweetAlert" Version="3.4.0" />
+    <PackageReference Include="Fable.DateFunctions" Version="3.9.0" />
+  </ItemGroup>
+  <Import Project=".paket\Paket.Restore.targets" />
+</Project>

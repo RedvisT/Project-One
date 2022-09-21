@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Femto</id>
+    <version>0.16.0</version>
+    <authors>Femto</authors>
+    <description>Package Description</description>
+    <releaseNotes>Use correct name of package manager when logging</releaseNotes>
+    <packageTypes>
+      <packageType name="DotnetTool" />
+    </packageTypes>
+  </metadata>
+</package>
