@@ -7,7 +7,6 @@ open Fable.Core
 open Fable.Import
 open Fulma
 open Fable.React
-open Validations
 
 type Model = 
     { 
