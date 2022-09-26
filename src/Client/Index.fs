@@ -10,7 +10,9 @@ open Fable.React
 open Feliz
 
     module StreamingView =
-        
+
+        type Model = unit
+           
         type Message =
             | YouTube
             | PrimeVideo
@@ -192,26 +194,24 @@ let view (model: Model) (dispatch: Message -> unit) =
                 ]
             ]
         ] 
-            
-        Level.level [] [
-            Level.left [] []
-            Level.right [] [
-                Field.div [ ] [
-                    Control.div [] [
-                        Button.button [
-                            // Button.Disabled model. XXX
-                            // Button.IsLoading model. XXX
-                            // Button.Color (if isModelValid model then IsInfo else IsGrey)
-                            // Button.OnClick (fun _ -> dispatch SubmitClick)
-                        ] [
-                            str "Click"
-                        ]
+        Field.div [] [        
+            Level.level [] [
+                Level.left [] []
+                Level.right [] [
+                    Field.div [ ] [
+                        Control.div [] [
+                            Button.button [
+                                Button.Color IsInfo 
+                                // Button.OnClick (fun _ -> dispatch SubmitClick)
+                            ] [
+                                str "Click"
+                            ]
 
+                        ]
                     ]
                 ]
             ]
         ]
     ]
-        
 
 
