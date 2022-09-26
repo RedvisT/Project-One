@@ -7,31 +7,61 @@ open Fable.Core
 open Fable.Import
 open Fulma
 open Fable.React
+open Feliz
 
     module StreamingView =
-        type Model = 
-            { 
-                Input: string
-            }
-
+        
         type Message =
-            | SetInput of string
+            | YouTube
+            | PrimeVideo
+            | Showmax
+            | Netflix
 
-        let init () : Model * Cmd<Message> =
-            ( { Input = "" 
-            }
-            ,Cmd.none
+            | GoToChoiceClick
+            | CancelClick
+
+        type Intent =
+        | Cancel
+
+        let init () : Cmd<Message> =
+            ( 
+             Cmd.none
             )
 
-        let update (message: Message) (model: Model) : Model * Cmd<Message> =
+        let update (message: Message) :  Cmd<Message> * Intent option =
             match message with
-            | SetInput value -> 
-                ({ model with Input = value }
-                , Cmd.none
+            | CancelClick ->
+                ( Cmd.none
+                , Some Cancel
+                )
+
+            | YouTube -> 
+                ( Cmd.none
+                , None
+                )
+                
+            | PrimeVideo -> 
+                ( Cmd.none
+                , None
+                )
+
+            | Showmax -> 
+                ( Cmd.none
+                , None
+                )
+
+            | Netflix -> 
+                ( Cmd.none
+                , None
+                )
+
+            | GoToChoiceClick -> 
+                ( Cmd.none
+                , None
                 )
 
 
-        let view (model: Model) (dispatch: Message -> unit) =
+        let view (dispatch: Message -> unit) =
             Container.container [] [
                 Card.card [ ] [
                     Card.header [ ] [
@@ -127,21 +157,18 @@ open Fable.React
 
 type SubViewModel =
     | NoSubView
-    | StreamingView of StreamingView.Model
             
 type Model = 
     {
-        Name: string
         SubViewModel: SubViewModel 
     }
 
 type Message =
-    | SetName of string
     | StreamingViewMessage of StreamingView.Message
 
 
 let init () : Model * Cmd<Message> =
-    ( { Name = "" 
+    ( { 
         SubViewModel = NoSubView
       }
     ,Cmd.none
@@ -149,37 +176,42 @@ let init () : Model * Cmd<Message> =
 
 let update (message: Message) (model: Model) : Model * Cmd<Message> =
     match message with
-        | SetName (value) -> 
-            ({ model with Name = value }
+
+        | StreamingViewMessage subViewmodel ->
+            let subViewModel = StreamingView.init 
+            ( model
             , Cmd.none
             )
-        | StreamingViewMessage(_) -> failwith "Not Implemented"
 
 let view (model: Model) (dispatch: Message -> unit) =
-    Field.div [] [ 
-        Field.body [] [
-            str "Welcome To Your One Click Streaming Menu"
+    Field.div [] [
+        Field.div [ Field.IsHorizontal ] [ 
+            Field.body [] [ Notification.notification [ Notification.Color IsSuccess ] [
+                strong [] [str "Welcome To Your One Click Streaming Menu "] 
+                p [] [ str " Click To Continue" ]
+                ]
             ]
-
-        Field.body [] [
-            Level.level [] [
-                                Level.left [] []
-                                Level.right [] [
-                                    Field.div [ ] [
-                                        Control.div [] [
-                                            Button.button [
-                                                // Button.Disabled model. XXX
-                                                // Button.IsLoading model. XXX
-                                                // Button.Color (if isModelValid model then IsInfo else IsGrey)
-                                                // Button.OnClick (fun _ -> dispatch SubmitClick)
-                                            ] [
-                                                str "Login"
-                                            ]
-
-                                        ]
-                                    ]
-                                ]
-                            ]
+        ] 
+            
+        Level.level [] [
+            Level.left [] []
+            Level.right [] [
+                Field.div [ ] [
+                    Control.div [] [
+                        Button.button [
+                            // Button.Disabled model. XXX
+                            // Button.IsLoading model. XXX
+                            // Button.Color (if isModelValid model then IsInfo else IsGrey)
+                            // Button.OnClick (fun _ -> dispatch SubmitClick)
+                        ] [
+                            str "Click"
                         ]
+
                     ]
+                ]
+            ]
+        ]
+    ]
+        
+
 
