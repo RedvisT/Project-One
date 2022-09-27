@@ -9,145 +9,96 @@ open Fulma
 open Fable.React
 open Feliz
 
-    module StreamingView =
+   
+module StreamingOptionsView =
+    type Model = 
+        {
+            WelcomeMessage: string 
+        }
 
-        type Model = unit
-           
-        type Message =
-            | YouTube
-            | PrimeVideo
-            | Showmax
-            | Netflix
+    type Message =
+        | Click
 
-            | GoToChoiceClick
-            | CancelClick
 
-        type Intent =
-        | Cancel
+    let init () : Model * Cmd<Message> =
+        ( { 
+            WelcomeMessage = ""
+        }
+        ,Cmd.none
+        ) 
 
-        let init () : Cmd<Message> =
-            ( 
-             Cmd.none
-            )
+    let update (message: Message) (model: Model) : Model * Cmd<Message> =
+        match message with
 
-        let update (message: Message) :  Cmd<Message> * Intent option =
-            match message with
-            | CancelClick ->
-                ( Cmd.none
-                , Some Cancel
-                )
-
-            | YouTube -> 
-                ( Cmd.none
-                , None
-                )
-                
-            | PrimeVideo -> 
-                ( Cmd.none
-                , None
-                )
-
-            | Showmax -> 
-                ( Cmd.none
-                , None
-                )
-
-            | Netflix -> 
-                ( Cmd.none
-                , None
-                )
-
-            | GoToChoiceClick -> 
-                ( Cmd.none
-                , None
+            | Click  -> 
+                ( model
+                , Cmd.none
                 )
 
 
-        let view (dispatch: Message -> unit) =
-            Container.container [] [
-                Card.card [ ] [
-                    Card.header [ ] [
-                        Card.Header.title [] [ str "Choose Your Streaming" ]
-                    ]
-                    Card.content [ ] [
-                        div [ ] [
+    let view (model: Model) (dispatch: Message -> unit) =
+        Container.container [] [
+            Card.card [ ] [
+                Card.header [ ] [
+                    Card.Header.title [] [ str "Choose Your Streaming" ]
+                ]
+                Card.content [ ] [
+                    div [ ] [
 
-                            strong [ ] [str "Do you want to:"]
+                        strong [ ] [str "Do you want to:"]
 
-                            div []
-                                    [ Field.div [ Field.Props
-                                        [] ] [
-                                        Control.div [] [
-                                            Radio.radio [ ] [
-                                                Radio.input [
-                                                    Radio.Input.Name "streaming"
-                                                    Radio.Input.Props [
-                                                        // Checked(model.xxx)
-                                                        // OnClick(fun _ -> SetAction XXX |> dispatch)
-                                                    ]
-                                                ]
-                                                str (" YouTube")
-                                                ]
+                        div []
+                            [ Field.div [ Field.Props
+                                [] ] [
+                                Control.div [] [
+                                    Radio.radio [ ] [
+                                        Radio.input [
+                                            Radio.Input.Name "streaming"
+                                            Radio.Input.Props [
+                                                // Checked(model.xxx)
+                                                // OnClick(fun _ -> SetAction XXX |> dispatch)
                                             ]
-
-                                        Control.div [] [
-                                            Radio.radio [ ] [
-                                                Radio.input [
-                                                    Radio.Input.Name "streaming"
-                                                    Radio.Input.Props [
-                                                        // Checked(model.xxx)
-                                                        // OnClick(fun _ -> SetAction XXX |> dispatch)
-                                                    ]
-                                                ]
-                                                str (" Prime Video")
-                                                ]
-                                            ]
-
-                                        Control.div [] [
-                                            Radio.radio [ ] [
-                                                Radio.input [
-                                                    Radio.Input.Name "streaming"
-                                                    Radio.Input.Props [
-                                                        // Checked(model.xxx)
-                                                        // OnClick(fun _ -> SetAction XXX |> dispatch)
-                                                    ]
-                                                ]
-                                                str (" Showmax")
-                                                ]
-                                            ]
-
-                                        Control.div [] [
-                                            Radio.radio [ ] [
-                                                Radio.input [
-                                                    Radio.Input.Name "streaming"
-                                                    Radio.Input.Props [
-                                                        // Checked(model.xxx)
-                                                        // OnClick(fun _ -> SetAction XXX |> dispatch)
-                                                    ]
-                                                ]
-                                                str (" Netflix")
-                                                ]
-                                            ]
+                                        ]
+                                        str (" YouTube")
                                         ]
                                     ]
 
-                                    
-
-
-                            Level.level [] [
-                                Level.left [] []
-                                Level.right [] [
-                                    Field.div [ ] [
-                                        Control.div [] [
-                                            Button.button [
-                                                // Button.Disabled model. XXX
-                                                // Button.IsLoading model. XXX
-                                                // Button.Color (if isModelValid model then IsInfo else IsGrey)
-                                                // Button.OnClick (fun _ -> dispatch SubmitClick)
-                                            ] [
-                                                str "Login"
+                                Control.div [] [
+                                    Radio.radio [ ] [
+                                        Radio.input [
+                                            Radio.Input.Name "streaming"
+                                            Radio.Input.Props [
+                                                // Checked(model.xxx)
+                                                // OnClick(fun _ -> SetAction XXX |> dispatch)
                                             ]
+                                        ]
+                                        str (" Prime Video")
+                                        ]
+                                    ]
 
+                                Control.div [] [
+                                    Radio.radio [ ] [
+                                        Radio.input [
+                                            Radio.Input.Name "streaming"
+                                            Radio.Input.Props [
+                                                // Checked(model.xxx)
+                                                // OnClick(fun _ -> SetAction XXX |> dispatch)
+                                            ]
+                                        ]
+                                        str (" Showmax")
+                                        ]
+                                    ]
+
+                                Control.div [] [
+                                    Radio.radio [ ] [
+                                        Radio.input [
+                                            Radio.Input.Name "streaming"
+                                            Radio.Input.Props [
+                                                // Checked(model.xxx)
+                                                // OnClick(fun _ -> SetAction XXX |> dispatch)
+                                            ]
+                                        ]
+                                        str (" Netflix")
                                         ]
                                     ]
                                 ]
@@ -156,6 +107,9 @@ open Feliz
                     ]
                 ]
             ]
+
+                     
+            
 
 type SubViewModel =
     | NoSubView
@@ -166,7 +120,7 @@ type Model =
     }
 
 type Message =
-    | StreamingViewMessage of StreamingView.Message
+    | StreamingOptionsViewMessage of StreamingOptionsView.Message
 
 
 let init () : Model * Cmd<Message> =
@@ -179,8 +133,8 @@ let init () : Model * Cmd<Message> =
 let update (message: Message) (model: Model) : Model * Cmd<Message> =
     match message with
 
-        | StreamingViewMessage subViewmodel ->
-            let subViewModel = StreamingView.init 
+        | StreamingOptionsViewMessage subViewmodel ->
+            let subViewModel = StreamingOptionsView.init 
             ( model
             , Cmd.none
             )
