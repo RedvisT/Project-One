@@ -17,24 +17,57 @@ module StreamingOptionsView =
         }
 
     type Message =
-        | Click
+        | YouTube
+            | PrimeVideo
+            | Showmax
+            | Netflix
 
+            | GoToChoiceClick
+            | CancelClick
 
-    let init () : Model * Cmd<Message> =
+    type Intent =
+        | Cancel
+
+    let init () =
         ( { 
             WelcomeMessage = ""
-        }
-        ,Cmd.none
-        ) 
+          }
+        , Cmd.none
+        )
 
-    let update (message: Message) (model: Model) : Model * Cmd<Message> =
+    let update (message:Message)(model:Model) =
         match message with
-
-            | Click  -> 
+            | CancelClick ->
                 ( model
                 , Cmd.none
                 )
 
+            | YouTube -> 
+                ( model
+                , Cmd.none
+                )
+                
+            | PrimeVideo -> 
+               ( model
+                , Cmd.none
+                )
+                
+            | Showmax -> 
+                ( model
+                , Cmd.none
+                )
+                
+            | Netflix -> 
+                ( model
+                , Cmd.none
+                )
+                
+            | GoToChoiceClick -> 
+                ( model
+                , Cmd.none
+                )
+                
+                
 
     let view (model: Model) (dispatch: Message -> unit) =
         Container.container [] [
@@ -106,13 +139,30 @@ module StreamingOptionsView =
                         ]
                     ]
                 ]
-            ]
+            Modal.Card.foot [ ] [
+                    Button.button [
+                        Button.Color IsInfo
+                        // Button.OnClick(fun _ -> dispatch Proceed)
+                    ] [
+                        str "Go To Stream"
+                    ]
+
+                    Button.button [
+                        Button.Color IsDanger
+                        // Button.OnClick(fun _ -> dispatch Cancel)
+                    ] [
+                        str "Cancel"
+                    ]
+                ]
+        ]
+    
 
                      
             
 
 type SubViewModel =
     | NoSubView
+    | StreamingOptionsViewModel of StreamingOptionsView.Model
             
 type Model = 
     {
@@ -121,51 +171,70 @@ type Model =
 
 type Message =
     | StreamingOptionsViewMessage of StreamingOptionsView.Message
+    | ContinueClick
 
 
-let init () : Model * Cmd<Message> =
+let init () =
     ( { 
         SubViewModel = NoSubView
       }
-    ,Cmd.none
+    , Cmd.none
     ) 
 
 let update (message: Message) (model: Model) : Model * Cmd<Message> =
     match message with
-
-        | StreamingOptionsViewMessage subViewmodel ->
-            let subViewModel = StreamingOptionsView.init 
-            ( model
-            , Cmd.none
+    | StreamingOptionsViewMessage subViewMessage ->
+        match model.SubViewModel with 
+        | NoSubView -> 
+            ( model 
+            , Cmd.none 
             )
 
-let view (model: Model) (dispatch: Message -> unit) =
-    Field.div [] [
-        Field.div [ Field.IsHorizontal ] [ 
-            Field.body [] [ Notification.notification [ Notification.Color IsSuccess ] [
-                strong [] [str "Welcome To Your One Click Streaming Menu "] 
-                p [] [ str " Click To Continue" ]
-                ]
-            ]
-        ] 
-        Field.div [] [        
-            Level.level [] [
-                Level.left [] []
-                Level.right [] [
-                    Field.div [ ] [
-                        Control.div [] [
-                            Button.button [
-                                Button.Color IsInfo 
-                                // Button.OnClick (fun _ -> dispatch SubmitClick)
-                            ] [
-                                str "Click"
-                            ]
+        | StreamingOptionsViewModel subViewModel ->
+            let (nextSubViewModel, nextSubViewCommand) = StreamingOptionsView.update subViewMessage subViewModel
 
+            ( { model with SubViewModel = StreamingOptionsViewModel(nextSubViewModel) }
+            , Cmd.map StreamingOptionsViewMessage nextSubViewCommand
+            )
+        
+    | ContinueClick  ->
+        let (subViewModel, subViewCommand) = StreamingOptionsView.init ()
+        ( { model with SubViewModel = StreamingOptionsViewModel(subViewModel) }
+        , Cmd.map StreamingOptionsViewMessage subViewCommand
+        )
+
+let view (model: Model) (dispatch: Message -> unit) =
+    match model.SubViewModel with 
+    | NoSubView ->
+        Field.div [] [
+            Field.div [ Field.IsHorizontal ] [ 
+                Field.body [] [ Notification.notification [ Notification.Color IsSuccess ] [
+                    strong [] [str "Welcome To Your One Click Streaming Menu "] 
+                    p [] [ str " Click To Continue" ]
+                    ]
+                ]
+            ] 
+            Field.div [] [        
+                Level.level [] [
+                    Level.left [] []
+                    Level.right [] [
+                        Field.div [ ] [
+                            Control.div [] [
+                                Button.button [
+                                    Button.Color IsInfo 
+                                    Button.OnClick (fun _ -> dispatch ContinueClick)
+                                ] [
+                                    str "Click"
+                                ]
+
+                            ]
                         ]
                     ]
                 ]
             ]
         ]
-    ]
+
+    | StreamingOptionsViewModel subViewModel ->
+        StreamingOptionsView.view subViewModel (StreamingOptionsViewMessage >> dispatch)
 
 
