@@ -40,31 +40,37 @@ module StreamingOptionsView =
             | CancelClick ->
                 ( model
                 , Cmd.none
+                , Some Cancel
                 )
 
             | YouTube ->
                 ( model
                 , Cmd.none
+                , None
                 )
 
             | PrimeVideo ->
                ( model
                 , Cmd.none
+                , None
                 )
 
             | Showmax ->
                 ( model
                 , Cmd.none
+                , None
                 )
 
             | Netflix ->
                 ( model
                 , Cmd.none
+                , None
                 )
 
             | GoToChoiceClick ->
                 ( model
                 , Cmd.none
+                , None
                 )
 
 
@@ -192,7 +198,7 @@ let update (message: Message) (model: Model) =
             )
 
         | StreamingOptionsViewModel subViewModel ->
-            let (nextSubViewModel, nextSubViewCommand) = StreamingOptionsView.update subViewMessage subViewModel
+            let (nextSubViewModel, nextSubViewCommand, anyIntent) = StreamingOptionsView.update subViewMessage subViewModel
 
             ( { model with SubViewModel = StreamingOptionsViewModel(nextSubViewModel) }
             , Cmd.map StreamingOptionsViewMessage nextSubViewCommand
@@ -202,8 +208,6 @@ let update (message: Message) (model: Model) =
         let (subViewModel, subViewCommand) = StreamingOptionsView.init ()
         ( { model with SubViewModel = StreamingOptionsViewModel(subViewModel) }
         , Cmd.map StreamingOptionsViewMessage subViewCommand
-        // , None
-
         )
 
     | Cancel ->
