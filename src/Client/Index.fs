@@ -155,7 +155,7 @@ module StreamingOptionsView =
 
                     Button.button [
                         Button.Color IsDanger
-                        // Button.OnClick(fun _ -> dispatch Cancel)
+                        Button.OnClick(fun _ -> dispatch CancelClick)
                     ] [
                         str "Cancel"
                     ]
@@ -178,8 +178,9 @@ type Model =
 type Message =
     | StreamingOptionsViewMessage of StreamingOptionsView.Message
     | ContinueClick
-    | Cancel
 
+type Intent =
+    | Cancel
 
 let init () =
     ( {
@@ -188,32 +189,40 @@ let init () =
     , Cmd.none
     )
 
-let update (message: Message) (model: Model) =
+let update (message: Message) (model: Model) (* : Model * Cmd<Message> * Intent option *) =
     match message with
     | StreamingOptionsViewMessage subViewMessage ->
         match model.SubViewModel with
         | NoSubView ->
             ( model
             , Cmd.none
+            // , None
             )
 
         | StreamingOptionsViewModel subViewModel ->
             let (nextSubViewModel, nextSubViewCommand, anyIntent) = StreamingOptionsView.update subViewMessage subViewModel
+            match anyIntent with
+            | None ->
+                ( model
+                , Cmd.none
+                // , None
+                )
 
-            ( { model with SubViewModel = StreamingOptionsViewModel(nextSubViewModel) }
-            , Cmd.map StreamingOptionsViewMessage nextSubViewCommand
-            )
+            | Some (StreamingOptionsView.Cancel)->
+                ( model
+                , Cmd.none
+                // , None
+                )
 
-    | ContinueClick  ->
+
+    | ContinueClick ->
         let (subViewModel, subViewCommand) = StreamingOptionsView.init ()
         ( { model with SubViewModel = StreamingOptionsViewModel(subViewModel) }
         , Cmd.map StreamingOptionsViewMessage subViewCommand
+        // , None
         )
 
-    | Cancel ->
-        ( model
-        , Cmd.none
-        )
+
 
 let view (model: Model) (dispatch: Message -> unit) =
     match model.SubViewModel with
