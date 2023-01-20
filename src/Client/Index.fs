@@ -10,28 +10,33 @@ open Fable.React
 open Feliz
 
 
+(* Links *)
+let YouTube = [ "https://www.youtube.com/" ]
+let PrimeVideo = [ "https://www.primevideo.com/?ref_=atv_auth_signout" ]
+let Showmax = [ "https://www.showmax.com/join/eng/welcome-showmax/za?utm_source=google_Google_search&utm_medium=paid&utm_campaign=ZA_NUA_AO_BRA_S_Google_search_Showmax_CW18_May_2021_EXACT_Display_Network_Test&utm_content=search_NUA_AO_BRA_S_Showmax_LogIn_CW18_May_2021_EXACT&utm_placement=&utm_creative=Text_Watch_Display_Network_Test&gclid=Cj0KCQiA8aOeBhCWARIsANRFrQH7HahDODZptX8jFcCXfNAevNVqFrRPxqH12vwdVZf1ar6N2ubeoWwaAtChEALw_wcB&gclsrc=aw.ds" ]
+let Netflix = [ "https://www.netflix.com/za/" ]
+
+
+(* Child *)
 module StreamingOptionsView =
-    type Model =
-        {
-            WelcomeMessage: string
-        }
+
+
+    type Model = Streaming
 
     type Message =
         | YouTube
-            | PrimeVideo
-            | Showmax
-            | Netflix
+        | PrimeVideo
+        | Showmax
+        | Netflix
 
-            | GoToChoiceClick
-            | CancelClick
+        | GoToChoiceClick
+        | CancelClick
 
     type Intent =
         | Cancel
 
     let init () =
-        ( {
-            WelcomeMessage = ""
-          }
+        ( Model.Streaming
         , Cmd.none
         )
 
@@ -44,6 +49,8 @@ module StreamingOptionsView =
                 )
 
             | YouTube ->
+                Browser.Dom.window.``open``("https://www.youtube.com/", "_self") |> ignore
+
                 ( model
                 , Cmd.none
                 , None
@@ -94,7 +101,7 @@ module StreamingOptionsView =
                                         Radio.input [
                                             Radio.Input.Name "streaming"
                                             Radio.Input.Props [
-                                                // Checked(model.xxx)
+                                                // Checked(model.StreamingOptionsView)
                                                 // OnClick(fun _ -> SetAction XXX |> dispatch)
                                             ]
                                         ]
@@ -165,7 +172,7 @@ module StreamingOptionsView =
 
 
 
-
+(* Parent *)
 type SubViewModel =
     | NoSubView
     | StreamingOptionsViewModel of StreamingOptionsView.Model
@@ -203,13 +210,13 @@ let update (message: Message) (model: Model) (* : Model * Cmd<Message> * Intent 
             let (nextSubViewModel, nextSubViewCommand, anyIntent) = StreamingOptionsView.update subViewMessage subViewModel
             match anyIntent with
             | None ->
-                ( model
+                ( { model with SubViewModel = StreamingOptionsViewModel(subViewModel) }
                 , Cmd.none
                 // , None
                 )
 
             | Some (StreamingOptionsView.Cancel)->
-                ( model
+                ( { model with SubViewModel = NoSubView }
                 , Cmd.none
                 // , None
                 )
