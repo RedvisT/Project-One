@@ -10,6 +10,7 @@ open Fable.React
 open Feliz
 
 
+
 (* Links *)
 let YouTube = [ "https://www.youtube.com/" ]
 let PrimeVideo = [ "https://www.primevideo.com/?ref_=atv_auth_signout" ]
@@ -34,6 +35,7 @@ module StreamingOptionsView =
 
     type Intent =
         | Cancel
+        | GoToChoice
 
     let init () =
         ( Model.Streaming
@@ -57,18 +59,24 @@ module StreamingOptionsView =
                 )
 
             | PrimeVideo ->
-               ( model
+                Browser.Dom.window.``open``("https://www.primevideo.com/?ref_=atv_auth_signout", "_self") |> ignore
+
+                ( model
                 , Cmd.none
                 , None
                 )
 
             | Showmax ->
+                Browser.Dom.window.``open``("https://www.showmax.com/join/eng/welcome-showmax/za?utm_source=google_Google_search&utm_medium=paid&utm_campaign=ZA_NUA_AO_BRA_S_Google_search_Showmax_CW18_May_2021_EXACT_Display_Network_Test&utm_content=search_NUA_AO_BRA_S_Showmax_LogIn_CW18_May_2021_EXACT&utm_placement=&utm_creative=Text_Watch_Display_Network_Test&gclid=Cj0KCQiA8aOeBhCWARIsANRFrQH7HahDODZptX8jFcCXfNAevNVqFrRPxqH12vwdVZf1ar6N2ubeoWwaAtChEALw_wcB&gclsrc=aw.ds") |> ignore
+
                 ( model
                 , Cmd.none
                 , None
                 )
 
             | Netflix ->
+                Browser.Dom.window.``open``("https://www.netflix.com/za/", "_self") |> ignore
+
                 ( model
                 , Cmd.none
                 , None
@@ -77,9 +85,8 @@ module StreamingOptionsView =
             | GoToChoiceClick ->
                 ( model
                 , Cmd.none
-                , None
+                , Some GoToChoice
                 )
-
 
 
     let view (model: Model) (dispatch: Message -> unit) =
@@ -100,10 +107,7 @@ module StreamingOptionsView =
                                     Radio.radio [ ] [
                                         Radio.input [
                                             Radio.Input.Name "streaming"
-                                            Radio.Input.Props [
-                                                // Checked(model.StreamingOptionsView)
-                                                // OnClick(fun _ -> SetAction XXX |> dispatch)
-                                            ]
+                                            Radio.Input.Props []
                                         ]
                                         str (" YouTube")
                                         ]
@@ -113,10 +117,7 @@ module StreamingOptionsView =
                                     Radio.radio [ ] [
                                         Radio.input [
                                             Radio.Input.Name "streaming"
-                                            Radio.Input.Props [
-                                                // Checked(model.xxx)
-                                                // OnClick(fun _ -> SetAction XXX |> dispatch)
-                                            ]
+                                            Radio.Input.Props []
                                         ]
                                         str (" Prime Video")
                                         ]
@@ -126,10 +127,7 @@ module StreamingOptionsView =
                                     Radio.radio [ ] [
                                         Radio.input [
                                             Radio.Input.Name "streaming"
-                                            Radio.Input.Props [
-                                                // Checked(model.xxx)
-                                                // OnClick(fun _ -> SetAction XXX |> dispatch)
-                                            ]
+                                            Radio.Input.Props []
                                         ]
                                         str (" Showmax")
                                         ]
@@ -139,10 +137,7 @@ module StreamingOptionsView =
                                     Radio.radio [ ] [
                                         Radio.input [
                                             Radio.Input.Name "streaming"
-                                            Radio.Input.Props [
-                                                // Checked(model.xxx)
-                                                // OnClick(fun _ -> SetAction XXX |> dispatch)
-                                            ]
+                                            Radio.Input.Props []
                                         ]
                                         str (" Netflix")
                                         ]
@@ -155,7 +150,7 @@ module StreamingOptionsView =
             Modal.Card.foot [ ] [
                     Button.button [
                         Button.Color IsInfo
-                        // Button.OnClick(fun _ -> dispatch Proceed)
+                        Button.OnClick(fun _ -> dispatch GoToChoiceClick)
                     ] [
                         str "Go To Stream"
                     ]
@@ -196,14 +191,13 @@ let init () =
     , Cmd.none
     )
 
-let update (message: Message) (model: Model) (* : Model * Cmd<Message> * Intent option *) =
+let update (message: Message) (model: Model)  =
     match message with
     | StreamingOptionsViewMessage subViewMessage ->
         match model.SubViewModel with
         | NoSubView ->
             ( model
             , Cmd.none
-            // , None
             )
 
         | StreamingOptionsViewModel subViewModel ->
@@ -212,13 +206,16 @@ let update (message: Message) (model: Model) (* : Model * Cmd<Message> * Intent 
             | None ->
                 ( { model with SubViewModel = StreamingOptionsViewModel(subViewModel) }
                 , Cmd.none
-                // , None
                 )
 
             | Some (StreamingOptionsView.Cancel)->
                 ( { model with SubViewModel = NoSubView }
                 , Cmd.none
-                // , None
+                )
+
+            | Some (StreamingOptionsView.GoToChoice)->
+                ( { model with SubViewModel = NoSubView }
+                , Cmd.none
                 )
 
 
@@ -226,7 +223,6 @@ let update (message: Message) (model: Model) (* : Model * Cmd<Message> * Intent 
         let (subViewModel, subViewCommand) = StreamingOptionsView.init ()
         ( { model with SubViewModel = StreamingOptionsViewModel(subViewModel) }
         , Cmd.map StreamingOptionsViewMessage subViewCommand
-        // , None
         )
 
 
