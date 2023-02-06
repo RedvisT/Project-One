@@ -6,87 +6,75 @@ open Elmish.React
 open Fable.Core
 open Fable.Import
 open Fulma
+open Fulma.Common
 open Fable.React
 open Feliz
 
 
 
-(* Links *)
-let YouTube = [ "https://www.youtube.com/" ]
-let PrimeVideo = [ "https://www.primevideo.com/?ref_=atv_auth_signout" ]
-let Showmax = [ "https://www.showmax.com/join/eng/welcome-showmax/za?utm_source=google_Google_search&utm_medium=paid&utm_campaign=ZA_NUA_AO_BRA_S_Google_search_Showmax_CW18_May_2021_EXACT_Display_Network_Test&utm_content=search_NUA_AO_BRA_S_Showmax_LogIn_CW18_May_2021_EXACT&utm_placement=&utm_creative=Text_Watch_Display_Network_Test&gclid=Cj0KCQiA8aOeBhCWARIsANRFrQH7HahDODZptX8jFcCXfNAevNVqFrRPxqH12vwdVZf1ar6N2ubeoWwaAtChEALw_wcB&gclsrc=aw.ds" ]
-let Netflix = [ "https://www.netflix.com/za/" ]
-
 
 (* Child *)
 module StreamingOptionsView =
-
-
-    type Model = Streaming
-
-    type Message =
+    type StreamingChoice =
         | YouTube
         | PrimeVideo
         | Showmax
         | Netflix
+
+    type Model = StreamingChoice option
+
+    type Message =
+        | ChoiceChange of StreamingChoice
 
         | GoToChoiceClick
         | CancelClick
 
     type Intent =
         | Cancel
-        | GoToChoice
 
     let init () =
-        ( Model.Streaming
+        ( None
         , Cmd.none
         )
 
-    let update (message:Message)(model:Model) =
+    let update (message:Message) (model:Model) =
         match message with
-            | CancelClick ->
-                ( model
-                , Cmd.none
-                , Some Cancel
-                )
+        | CancelClick ->
+            ( model
+            , Cmd.none
+            , Some Cancel
+            )
 
-            | YouTube ->
-                Browser.Dom.window.``open``("https://www.youtube.com/", "_self") |> ignore
+        | ChoiceChange choice ->
+            ( Some choice
+            , Cmd.none
+            , None
+            )
 
-                ( model
-                , Cmd.none
-                , None
-                )
+        | GoToChoiceClick ->
+            match model with
+            | None -> ()
+            | Some choice ->
+                let url =
+                    match choice with
+                    | YouTube ->
+                        "https://www.youtube.com/"
 
-            | PrimeVideo ->
-                Browser.Dom.window.``open``("https://www.primevideo.com/?ref_=atv_auth_signout", "_self") |> ignore
+                    | PrimeVideo ->
+                        "https://www.primevideo.com/?ref_=atv_auth_signout"
 
-                ( model
-                , Cmd.none
-                , None
-                )
+                    | Showmax ->
+                        "https://www.showmax.com/join/eng/welcome-showmax/za?utm_source=google_Google_search&utm_medium=paid&utm_campaign=ZA_NUA_AO_BRA_S_Google_search_Showmax_CW18_May_2021_EXACT_Display_Network_Test&utm_content=search_NUA_AO_BRA_S_Showmax_LogIn_CW18_May_2021_EXACT&utm_placement=&utm_creative=Text_Watch_Display_Network_Test&gclid=Cj0KCQiA8aOeBhCWARIsANRFrQH7HahDODZptX8jFcCXfNAevNVqFrRPxqH12vwdVZf1ar6N2ubeoWwaAtChEALw_wcB&gclsrc=aw.ds"
 
-            | Showmax ->
-                Browser.Dom.window.``open``("https://www.showmax.com/join/eng/welcome-showmax/za?utm_source=google_Google_search&utm_medium=paid&utm_campaign=ZA_NUA_AO_BRA_S_Google_search_Showmax_CW18_May_2021_EXACT_Display_Network_Test&utm_content=search_NUA_AO_BRA_S_Showmax_LogIn_CW18_May_2021_EXACT&utm_placement=&utm_creative=Text_Watch_Display_Network_Test&gclid=Cj0KCQiA8aOeBhCWARIsANRFrQH7HahDODZptX8jFcCXfNAevNVqFrRPxqH12vwdVZf1ar6N2ubeoWwaAtChEALw_wcB&gclsrc=aw.ds") |> ignore
+                    | Netflix ->
+                        "https://www.netflix.com/za/"
 
-                ( model
-                , Cmd.none
-                , None
-                )
+                Browser.Dom.window.``open``(url, "_self") |> ignore
 
-            | Netflix ->
-                Browser.Dom.window.``open``("https://www.netflix.com/za/", "_self") |> ignore
-
-                ( model
-                , Cmd.none
-                , None
-                )
-
-            | GoToChoiceClick ->
-                ( model
-                , Cmd.none
-                , Some GoToChoice
-                )
+            ( model
+            , Cmd.none
+            , None
+            )
 
 
     let view (model: Model) (dispatch: Message -> unit) =
@@ -107,17 +95,21 @@ module StreamingOptionsView =
                                     Radio.radio [ ] [
                                         Radio.input [
                                             Radio.Input.Name "streaming"
-                                            Radio.Input.Props []
+                                            Radio.Input.Props [
+                                                Props.OnClick(fun _ -> dispatch(ChoiceChange YouTube))
+                                            ]
                                         ]
                                         str (" YouTube")
-                                        ]
                                     ]
+                                ]
 
                                 Control.div [] [
                                     Radio.radio [ ] [
                                         Radio.input [
                                             Radio.Input.Name "streaming"
-                                            Radio.Input.Props []
+                                            Radio.Input.Props [
+                                                Props.OnClick(fun _ -> dispatch(ChoiceChange PrimeVideo))
+                                            ]
                                         ]
                                         str (" Prime Video")
                                         ]
@@ -127,7 +119,9 @@ module StreamingOptionsView =
                                     Radio.radio [ ] [
                                         Radio.input [
                                             Radio.Input.Name "streaming"
-                                            Radio.Input.Props []
+                                            Radio.Input.Props [
+                                                Props.OnClick(fun _ -> dispatch(ChoiceChange Showmax))
+                                            ]
                                         ]
                                         str (" Showmax")
                                         ]
@@ -137,7 +131,9 @@ module StreamingOptionsView =
                                     Radio.radio [ ] [
                                         Radio.input [
                                             Radio.Input.Name "streaming"
-                                            Radio.Input.Props []
+                                            Radio.Input.Props [
+                                                Props.OnClick(fun _ -> dispatch(ChoiceChange Netflix))
+                                            ]
                                         ]
                                         str (" Netflix")
                                         ]
@@ -204,18 +200,13 @@ let update (message: Message) (model: Model)  =
             let (nextSubViewModel, nextSubViewCommand, anyIntent) = StreamingOptionsView.update subViewMessage subViewModel
             match anyIntent with
             | None ->
-                ( { model with SubViewModel = StreamingOptionsViewModel(subViewModel) }
-                , Cmd.none
+                ( { model with SubViewModel = StreamingOptionsViewModel nextSubViewModel }
+                , Cmd.map StreamingOptionsViewMessage nextSubViewCommand
                 )
 
             | Some (StreamingOptionsView.Cancel)->
                 ( { model with SubViewModel = NoSubView }
-                , Cmd.none
-                )
-
-            | Some (StreamingOptionsView.GoToChoice)->
-                ( { model with SubViewModel = NoSubView }
-                , Cmd.none
+                , Cmd.map StreamingOptionsViewMessage nextSubViewCommand
                 )
 
 
